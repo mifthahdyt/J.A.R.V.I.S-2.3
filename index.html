@@ -199,25 +199,28 @@
   </div>
 
   <script>
-    const logs = [
-      'LOADING NEURAL INTERFACE…',
-      'VOICE MODULE STANDBY…',
-      'CALIBRATING SENSORS…',
-      'ESTABLISHING UPLINK…',
-      'SYSTEMS NOMINAL — LAUNCHING…'
-    ];
-    const el = document.getElementById('bootLog');
-    let i = 0;
-    const iv = setInterval(() => {
-      if (i < logs.length) { el.textContent = logs[i++]; }
-      else { clearInterval(iv); }
-    }, 520);
+  const logs = [
+    'LOADING NEURAL INTERFACE…',
+    'VOICE MODULE STANDBY…',
+    'CALIBRATING SENSORS…',
+    'ESTABLISHING UPLINK…',
+    'SYSTEMS NOMINAL — LAUNCHING…'
+  ];
+  const el = document.getElementById('bootLog');
+  let i = 0;
+  const iv = setInterval(() => {
+    if (i < logs.length) {
+      el.textContent = logs[i++];
+    } else {
+      clearInterval(iv);
+    }
+  }, 520);
 
-    // Redirect to main after 3 seconds
+  // Redirect after 5 seconds
+  setTimeout(() => {
+    document.body.classList.add('exit');
     setTimeout(() => {
-      document.body.classList.add('exit');
-      setTimeout(() => { window.location.href = '/main'; }, 420);
-    }, 3000);
-  </script>
-</body>
-</html>
+      window.location.href = './main.html';
+    }, 420);
+  }, 5000);
+</script>
