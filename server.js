@@ -3,10 +3,11 @@ import fetch from "node-fetch";
 
 const app = express();
 
-// penting supaya bisa baca JSON dari frontend
 app.use(express.json());
 
+// =======================
 // API CHAT
+// =======================
 app.post("/api/chat", async (req, res) => {
   try {
     const message = req.body?.message;
@@ -18,10 +19,9 @@ app.post("/api/chat", async (req, res) => {
       });
     }
 
-    // timeout biar tidak fetch failed di Vercel
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 25000);
-
+    // =======================
+    // REQUEST KE HUGGING FACE
+    // =======================
     const response = await fetch(
       "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
       {
@@ -33,15 +33,24 @@ app.post("/api/chat", async (req, res) => {
         body: JSON.stringify({
           inputs: message
         }),
-        signal: controller.signal
       }
     );
 
-    clearTimeout(timeout);
+    // =======================
+    // AMBIL RESPONSE AMAN
+    // =======================
+    const text = await response.text();
+    let data;
 
-    const data = await response.json();
+    try {
+      data = JSON.parse(text);
+    } catch (err) {
+      data = { error: text };
+    }
 
-    // ambil jawaban AI (aman dari berbagai format HF)
+    // =======================
+    // AMBIL JAWABAN AI
+    // =======================
     const reply =
       data?.[0]?.generated_text ||
       data?.generated_text ||
@@ -61,10 +70,14 @@ app.post("/api/chat", async (req, res) => {
   }
 });
 
-// untuk test server hidup
+// =======================
+// TEST ROUTE
+// =======================
 app.get("/", (req, res) => {
   res.send("JARVIS API is running 🚀");
 });
 
-// wajib untuk Vercel
+// =======================
+// EXPORT FOR VERCEL
+// =======================
 export default app;
