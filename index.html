@@ -8,15 +8,12 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
     :root {
-      --cyan:    #00f5ff;
-      --blue:    #0a84ff;
-      --dark:    #020c1a;
-      --mid:     #061428;
-      --glow:    0 0 20px #00f5ff88, 0 0 60px #00f5ff33;
+      --cyan: #00f5ff;
+      --blue: #0a84ff;
+      --dark: #020c1a;
+      --glow: 0 0 20px #00f5ff88, 0 0 60px #00f5ff33;
     }
-
     html, body {
       width: 100%; height: 100%;
       background: var(--dark);
@@ -24,160 +21,52 @@
       font-family: 'Share Tech Mono', monospace;
       overflow: hidden;
     }
-
-    /* ── Scanlines overlay ── */
     body::after {
       content: '';
       position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        0deg,
-        transparent,
-        transparent 2px,
-        rgba(0,245,255,.03) 2px,
-        rgba(0,245,255,.03) 4px
-      );
-      pointer-events: none;
-      z-index: 100;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,255,.03) 2px, rgba(0,245,255,.03) 4px);
+      pointer-events: none; z-index: 100;
     }
-
-    /* ── Background grid ── */
     .grid-bg {
       position: fixed; inset: 0;
-      background-image:
-        linear-gradient(rgba(0,245,255,.05) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,245,255,.05) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(0,245,255,.05) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,.05) 1px, transparent 1px);
       background-size: 60px 60px;
       animation: gridPulse 4s ease-in-out infinite;
     }
-    @keyframes gridPulse {
-      0%,100% { opacity: .6 } 50% { opacity: 1 }
-    }
-
-    /* ── Center stage ── */
+    @keyframes gridPulse { 0%,100%{opacity:.6} 50%{opacity:1} }
     .stage {
       position: relative; z-index: 10;
       width: 100%; height: 100%;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 32px;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 32px;
     }
-
-    /* ── Rotating ring ── */
-    .ring-wrap {
-      position: relative;
-      width: 220px; height: 220px;
-    }
-    .ring {
-      position: absolute; inset: 0;
-      border-radius: 50%;
-      border: 2px solid transparent;
-    }
-    .ring-1 {
-      border-top-color: var(--cyan);
-      border-right-color: var(--cyan);
-      animation: spin 2s linear infinite;
-      box-shadow: var(--glow);
-    }
-    .ring-2 {
-      inset: 14px;
-      border-bottom-color: var(--blue);
-      border-left-color: var(--blue);
-      animation: spin 3s linear infinite reverse;
-    }
-    .ring-3 {
-      inset: 28px;
-      border-top-color: rgba(0,245,255,.4);
-      border-right-color: rgba(0,245,255,.4);
-      animation: spin 1.4s linear infinite;
-    }
+    .ring-wrap { position: relative; width: 220px; height: 220px; }
+    .ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid transparent; }
+    .ring-1 { border-top-color: var(--cyan); border-right-color: var(--cyan); animation: spin 2s linear infinite; box-shadow: var(--glow); }
+    .ring-2 { inset: 14px; border-bottom-color: var(--blue); border-left-color: var(--blue); animation: spin 3s linear infinite reverse; }
+    .ring-3 { inset: 28px; border-top-color: rgba(0,245,255,.4); animation: spin 1.4s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg) } }
-
     .core {
-      position: absolute; inset: 42px;
-      border-radius: 50%;
+      position: absolute; inset: 42px; border-radius: 50%;
       background: radial-gradient(circle, #0a84ff55 0%, #00f5ff22 50%, transparent 70%);
       display: flex; align-items: center; justify-content: center;
       animation: corePulse 2s ease-in-out infinite;
     }
-    @keyframes corePulse {
-      0%,100% { transform: scale(1); opacity: .8 }
-      50%      { transform: scale(1.1); opacity: 1 }
-    }
-    .core-letter {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 42px; font-weight: 900;
-      color: var(--cyan);
-      text-shadow: var(--glow);
-      letter-spacing: -2px;
-    }
-
-    /* ── Title ── */
-    .title {
-      font-family: 'Orbitron', sans-serif;
-      font-size: clamp(24px, 4vw, 42px);
-      font-weight: 900;
-      letter-spacing: 12px;
-      text-transform: uppercase;
-      text-shadow: var(--glow);
-      animation: flickerIn 1s ease forwards;
-    }
-    .subtitle {
-      font-size: 11px;
-      letter-spacing: 6px;
-      color: rgba(0,245,255,.5);
-      text-transform: uppercase;
-    }
-    @keyframes flickerIn {
-      0%   { opacity: 0; transform: scale(.95) }
-      60%  { opacity: 1 }
-      70%  { opacity: .6 }
-      80%  { opacity: 1 }
-      100% { opacity: 1; transform: scale(1) }
-    }
-
-    /* ── Boot log ── */
-    .boot-log {
-      font-size: 11px;
-      color: rgba(0,245,255,.6);
-      letter-spacing: 2px;
-      height: 18px;
-      text-align: center;
-    }
-
-    /* ── Progress bar ── */
-    .progress-wrap {
-      width: min(380px, 80vw);
-      height: 3px;
-      background: rgba(0,245,255,.1);
-      border-radius: 2px;
-      overflow: hidden;
-      position: relative;
-    }
-    .progress-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      box-shadow: 0 0 12px var(--cyan);
-      width: 0%;
-      animation: fillBar 2.8s cubic-bezier(.4,0,.2,1) forwards;
-    }
+    @keyframes corePulse { 0%,100%{transform:scale(1);opacity:.8} 50%{transform:scale(1.1);opacity:1} }
+    .core-letter { font-family: 'Orbitron', sans-serif; font-size: 42px; font-weight: 900; color: var(--cyan); text-shadow: var(--glow); }
+    .title { font-family: 'Orbitron', sans-serif; font-size: clamp(24px, 4vw, 42px); font-weight: 900; letter-spacing: 12px; text-shadow: var(--glow); animation: flickerIn 1s ease forwards; }
+    .subtitle { font-size: 11px; letter-spacing: 6px; color: rgba(0,245,255,.5); text-transform: uppercase; }
+    @keyframes flickerIn { 0%{opacity:0;transform:scale(.95)} 60%{opacity:1} 70%{opacity:.6} 80%{opacity:1} 100%{opacity:1;transform:scale(1)} }
+    .boot-log { font-size: 11px; color: rgba(0,245,255,.6); letter-spacing: 2px; height: 18px; text-align: center; }
+    .progress-wrap { width: min(380px, 80vw); height: 3px; background: rgba(0,245,255,.1); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--blue), var(--cyan)); box-shadow: 0 0 12px var(--cyan); width: 0%; animation: fillBar 2.8s cubic-bezier(.4,0,.2,1) forwards; }
     @keyframes fillBar { to { width: 100% } }
-
-    /* ── Page-out transition ── */
-    body.exit {
-      animation: exitFlash .4s ease forwards;
-    }
-    @keyframes exitFlash {
-      0%  { opacity: 1; filter: brightness(1) }
-      50% { opacity: 1; filter: brightness(3) }
-      100%{ opacity: 0; filter: brightness(0) }
-    }
+    body.exit { animation: exitFlash .4s ease forwards; }
+    @keyframes exitFlash { 0%{opacity:1;filter:brightness(1)} 50%{opacity:1;filter:brightness(3)} 100%{opacity:0;filter:brightness(0)} }
   </style>
 </head>
 <body>
   <div class="grid-bg"></div>
-
   <div class="stage">
     <div class="ring-wrap">
       <div class="ring ring-1"></div>
@@ -185,42 +74,22 @@
       <div class="ring ring-3"></div>
       <div class="core"><span class="core-letter">J</span></div>
     </div>
-
     <div>
       <div class="title">J.A.R.V.I.S</div>
       <div class="subtitle">Just A Rather Very Intelligent System</div>
     </div>
-
     <div class="boot-log" id="bootLog">INITIALIZING CORE SYSTEMS…</div>
-
-    <div class="progress-wrap">
-      <div class="progress-fill"></div>
-    </div>
+    <div class="progress-wrap"><div class="progress-fill"></div></div>
   </div>
-
   <script>
-  const logs = [
-    'LOADING NEURAL INTERFACE…',
-    'VOICE MODULE STANDBY…',
-    'CALIBRATING SENSORS…',
-    'ESTABLISHING UPLINK…',
-    'SYSTEMS NOMINAL — LAUNCHING…'
-  ];
-  const el = document.getElementById('bootLog');
-  let i = 0;
-  const iv = setInterval(() => {
-    if (i < logs.length) {
-      el.textContent = logs[i++];
-    } else {
-      clearInterval(iv);
-    }
-  }, 520);
-
-  // Redirect after 5 seconds
-  setTimeout(() => {
-    document.body.classList.add('exit');
+    const logs = ['LOADING NEURAL INTERFACE…','VOICE MODULE STANDBY…','CALIBRATING SENSORS…','ESTABLISHING UPLINK…','SYSTEMS NOMINAL — LAUNCHING…'];
+    const el = document.getElementById('bootLog');
+    let i = 0;
+    const iv = setInterval(() => { if (i < logs.length) el.textContent = logs[i++]; else clearInterval(iv); }, 520);
     setTimeout(() => {
-      window.location.href = './main.html';
-    }, 420);
-  }, 5000);
-</script>
+      document.body.classList.add('exit');
+      setTimeout(() => { window.location.href = './main.html'; }, 420);
+    }, 3000);
+  </script>
+</body>
+</html>
