@@ -9,22 +9,22 @@ export default async function handler(req, res) {
           "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          inputs: "Halo, siapa kamu?"
+          inputs: "Halo"
         })
       }
     );
 
-    const data = await response.json();
+    const text = await response.text();
 
     res.status(200).json({
-      success: true,
-      result: data
+      status: response.status,
+      result: text
     });
 
   } catch (error) {
     res.status(500).json({
-      success: false,
-      error: error.message
+      error: String(error),
+      stack: error.stack
     });
   }
 }
