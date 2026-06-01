@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>J.A.R.V.I.S — Popup</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --cyan: #00f5ff; --blue: #0a84ff; --green: #00ff9d;
+      --red: #ff3a3a; --dark: #020c1a;
+      --glow: 0 0 16px #00f5ff88, 0 0 40px #00f5ff22;
+    }
+    html, body { width: 100%; height: 100%; background: var(--dark); color: var(--cyan); font-family: 'Share Tech Mono', monospace; overflow: hidden; }
+    body::after {
+      content: ''; position: fixed; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,255,.025) 2px, rgba(0,245,255,.025) 4px);
+      pointer-events: none; z-index: 100;
+    }
+    .grid-bg {
+      position: fixed; inset: 0;
+      background-image: linear-gradient(rgba(0,245,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,.04) 1px, transparent 1px);
+      background-size: 40px 40px;
+    }
+    .container {
+      position: relative; z-index: 10;
+      width: 100%; height: 100%;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      gap: 10px; padding: 16px;
+    }
+
+    /* Header */
+    .popup-header {
+      position: absolute; top: 0; left: 0; right: 0;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 8px 16px;
+      border-bottom: 1px solid rgba(0,245,255,.15);
+      background: rgba(2,12,26,.9);
+    }
+    .popup-title { font-family: 'Orbitron', sans-serif; font-size: 11px; letter-spacing: 5px; text-shadow: var(--glow); }
+    .popup-status { display: flex; align-items: center; gap: 8px; font-size: 9px; letter-spacing: 2px; color: rgba(0,245,255,.6); }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--green); box-shadow: 0 0 8px var(--green); animation: blink 2s infinite; }
+    .dot.yellow { background: #ffd700; box-shadow: 0 0 8px #ffd700; animation: blink .5s infinite; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
+
+    /* Orb */
+    .orb-wrap { position: relative; width: 80px; height: 80px; margin-top: 36px; }
+    .orb-ring { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid transparent; }
+    .r1 { border-top-color: var(--cyan); animation: spin 2s linear infinite; }
+    .r2 { inset: 8px; border-bottom-color: var(--blue); animation: spin 3s linear infinite reverse; }
+    @keyframes spin { to { transform: rotate(360deg) } }
+    .orb-core {
+      position: absolute; inset: 18px; border-radius: 50%;
+      background: radial-gradient(circle, rgba(10,132,255,.5) 0%, rgba(0,245,255,.2) 50%, transparent 80%);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all .3s;
+    }
+    .orb-core:hover { filter: brightness(1.4); }
+    .orb-core.listening { background: radial-gradient(circle, rgba(0,255,157,.4) 0%, rgba(0,245,255,.2) 50%, transparent 80%); animation: pulse .8s ease-in-out infinite; }
+    .orb-core.speaking  { background: radial-gradient(circle, rgba(255,215,0,.4) 0%, rgba(0,245,255,.2) 50%, transparent 80%); animation: pulse .4s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.1)} }
+    .orb-icon { font-size: 20px; filter: drop-shadow(0 0 6px var(--cyan)); }
+
+    /* State */
+    .state { font-size: 9px; letter-spacing: 3px; color: rgba(0,245,255,.5); text-align: center; }
+
+    /* Transcript */
+    .transcript {
+      font-size: 11px; text-align: center; color: rgba(0,245,255,.8);
+      min-height: 30px; max-width: 360px; line-height: 1.5;
+      border: 1px solid rgba(0,245,255,.1); padding: 6px 10px; width: 100%;
+    }
+
+    /* Controls */
+    .controls { display: flex; gap: 8px; width: 100%; }
+    .btn {
+      flex: 1; background: transparent; border: 1px solid rgba(0,245,255,.2);
+      color: var(--cyan); font-family: 'Share Tech Mono'; font-size: 9px; letter-spacing: 2px;
+      padding: 8px; cursor: pointer; transition: all .2s;
+    }
+    .btn:hover { border-color: var(--cyan); box-shadow: 0 0 8px rgba(0,245,255,.3); }
+    .btn.danger { border-color: rgba(255,58,58,.3); color: var(--red); }
+    .btn.danger:hover { border-color: var(--red); }
+
+    /* Waveform */
+    .waveform { display: flex; align-items: flex-end; gap: 2px; height: 24px; width: 100%; }
+    .wv { flex: 1; background: rgba(0,245,255,.3); border-radius: 1px 1px 0 0; min-height: 2px; }
+    .waveform.active .wv:nth-child(odd)  { animation: wvo .6s ease-in-out infinite alternate; }
+    .waveform.active .wv:nth-child(even) { animation: wve .8s ease-in-out infinite alternate; }
+    @keyframes wvo { from{height:2px} to{height:22px} }
+    @keyframes wve { from{height:6px} to{height:16px} }
+  </style>
+</head>
+<body>
+  <div class="grid-bg"></div>
+  <div class="container">
+    <div class="popup-header">
+      <div class="popup-title">J.A.R.V.I.S</div>
+      <div class="popup-status">
+        <div class="dot" id="dot"></div>
+        <span id="statusTxt">STANDBY</span>
+      </div>
+    </div>
+
+    <div class="orb-wrap">
+      <div class="orb-ring r1"></div>
+      <div class="orb-ring r2"></div>
+      <div class="orb-core" id="orbCore" onclick="toggleListen()">
+        <span class="orb-icon" id="orbIcon">🤖</span>
+      </div>
+    </div>
+
+    <div class="state" id="stateLabel">UCAPKAN "JARVIS"</div>
+    <div class="transcript" id="transcript">–</div>
+
+    <div class="waveform" id="waveform">
+      <div class="wv"></div><div class="wv"></div><div class="wv"></div>
+      <div class="wv"></div><div class="wv"></div><div class="wv"></div>
+      <div class="wv"></div><div class="wv"></div><div class="wv"></div>
+      <div class="wv"></div>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="startListening()">▶ START</button>
+      <button class="btn danger" onclick="stopListening()">■ STOP</button>
+    </div>
+  </div>
+
+  <script>
+  /* ── Popup JARVIS – mini logic ── */
+  const STATE = { awake: false, listening: false, speaking: false };
+  const orbCore   = document.getElementById('orbCore');
+  const orbIcon   = document.getElementById('orbIcon');
+  const stateEl   = document.getElementById('stateLabel');
+  const transEl   = document.getElementById('transcript');
+  const dot       = document.getElementById('dot');
+  const statusTxt = document.getElementById('statusTxt');
+  const waveform  = document.getElementById('waveform');
+
+  const SITES = {
+    google:'https://www.google.com', youtube:'https://www.youtube.com',
+    whatsapp:'https://web.whatsapp.com', spotify:'https://open.spotify.com', chatgpt:'https://chat.openai.com',
+  };
+
+  function speak(text, onDone) {
+    if (!window.speechSynthesis) { if(onDone) onDone(); return; }
+    window.speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang='id-ID'; u.rate=1; u.pitch=0.9;
+    const voices = window.speechSynthesis.getVoices();
+    const id = voices.find(v => v.lang.startsWith('id'));
+    if (id) u.voice = id;
+    STATE.speaking = true;
+    orbCore.classList.add('speaking'); orbIcon.textContent='💬';
+    u.onend = u.onerror = () => {
+      STATE.speaking = false;
+      orbCore.classList.remove('speaking');
+      orbIcon.textContent = STATE.awake ? '👂' : '🤖';
+      if (onDone) onDone();
+    };
+    window.speechSynthesis.speak(u);
+  }
+
+  function setStatus(txt, dotClass) {
+    statusTxt.textContent = txt;
+    dot.className = 'dot' + (dotClass ? ' '+dotClass : '');
+  }
+
+  function openTab(url) {
+    const w = window.open(url,'_blank');
+    if (!w) { const a=document.createElement('a');a.href=url;a.target='_blank';document.body.appendChild(a);a.click();a.remove(); }
+  }
+
+  function processText(text) {
+    const raw = text.trim(); if (!raw) return;
+    transEl.textContent = raw;
+    const lower = raw.toLowerCase();
+
+    if (!STATE.awake) {
+      if (lower.includes('jarvis')) {
+        STATE.awake = true;
+        const h = new Date().getHours();
+        const greet = h<11 ? 'Iya tuan, selamat pagi.' : h<15 ? 'Iya tuan, selamat siang.' : h<18 ? 'Iya tuan, selamat sore.' : 'Iya tuan, selamat malam.';
+        orbIcon.textContent='👂'; stateEl.textContent='SIAP PERINTAH';
+        setStatus('AKTIF','yellow');
+        speak(greet + ' Ada yang bisa dibantu?');
+      }
+      return;
+    }
+
+    const cmd = raw.replace(/^jarvis[,\s]*/i,'').trim().toLowerCase();
+    if (!cmd) return;
+
+    // Parse commands ringkas
+    if (/(buka|open)\s*google/.test(cmd))          { speak('Membuka Google.', () => openTab(SITES.google)); }
+    else if (/(buka|open)\s*youtube/.test(cmd))    { speak('Membuka YouTube.', () => openTab(SITES.youtube)); }
+    else if (/(buka|open)\s*spotify/.test(cmd))    { speak('Membuka Spotify.', () => openTab(SITES.spotify)); }
+    else if (/(buka|open)\s*whatsapp/.test(cmd))   { speak('Membuka WhatsApp.', () => openTab(SITES.whatsapp)); }
+    else if (/(buka|open)\s*chatgpt/.test(cmd))    { speak('Membuka ChatGPT.', () => openTab(SITES.chatgpt)); }
+    else if (/cari\s+(.+)/.test(cmd)) {
+      const q = cmd.match(/cari\s+(.+)/)[1];
+      speak(`Mencari ${q}.`, () => openTab(`https://www.google.com/search?q=${encodeURIComponent(q)}`));
+    }
+    else if (/jam|waktu|pukul/.test(cmd)) { speak('Sekarang pukul ' + new Date().toLocaleTimeString('id-ID') + ', tuan.'); }
+    else if (/tidur|nonaktif/.test(cmd))  { speak('Baik tuan, standby.', () => { STATE.awake=false; orbIcon.textContent='🤖'; stateEl.textContent='UCAPKAN "JARVIS"'; setStatus('STANDBY',''); }); }
+    else { speak('Maaf tuan, perintah tidak dikenali.'); }
+
+    clearTimeout(STATE._t);
+    STATE._t = setTimeout(() => { if (!STATE.speaking) { STATE.awake=false; orbIcon.textContent='🤖'; stateEl.textContent='UCAPKAN "JARVIS"'; setStatus('STANDBY',''); } }, 15000);
+  }
+
+  let recognition=null, manualStop=false;
+  function initRecognition() {
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SR) { transEl.textContent='⚠ Gunakan Chrome'; return; }
+    recognition = new SR();
+    recognition.lang='id-ID'; recognition.continuous=true; recognition.interimResults=true;
+    recognition.onstart = () => { STATE.listening=true; waveform.classList.add('active'); setStatus(STATE.awake?'AKTIF':'STANDBY', STATE.awake?'yellow':''); orbCore.classList.add('listening'); };
+    recognition.onresult = (e) => {
+      let interim='', final='';
+      for (let i=e.resultIndex;i<e.results.length;i++) { if(e.results[i].isFinal) final+=e.results[i][0].transcript; else interim+=e.results[i][0].transcript; }
+      if (interim) transEl.textContent=interim;
+      if (final) processText(final);
+    };
+    recognition.onerror = () => {};
+    recognition.onend = () => {
+      STATE.listening=false; waveform.classList.remove('active'); orbCore.classList.remove('listening');
+      if (!manualStop) setTimeout(() => { try{recognition.start();}catch(e){} }, 300);
+    };
+  }
+  function startListening() {
+    if (!recognition) initRecognition();
+    manualStop=false; try{recognition.start();}catch(e){}
+  }
+  function stopListening() {
+    manualStop=true; if(recognition) recognition.stop();
+    STATE.listening=false; STATE.awake=false;
+    waveform.classList.remove('active'); orbCore.classList.remove('listening');
+    orbIcon.textContent='🤖'; stateEl.textContent='UCAPKAN "JARVIS"'; setStatus('OFFLINE','');
+  }
+  function toggleListen() { if(STATE.listening) stopListening(); else startListening(); }
+
+  window.addEventListener('load', () => {
+    window.speechSynthesis.getVoices();
+    window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
+    setTimeout(() => { initRecognition(); startListening(); }, 500);
+  });
+  </script>
+</body>
+</html>
