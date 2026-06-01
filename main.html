@@ -19,10 +19,17 @@
       --mid:        #061428;
       --panel:      rgba(0,245,255,.04);
       --border:     rgba(0,245,255,.15);
+      --accent:     #00f5ff;
       --glow-sm:    0 0 10px #00f5ff66;
       --glow:       0 0 20px #00f5ff88, 0 0 60px #00f5ff33;
       --glow-lg:    0 0 30px #00f5ffaa, 0 0 90px #00f5ff44;
     }
+
+    /* ── MODE THEMES ── */
+    body.mode-fokus  { --accent:#ff6b35; --cyan:#ff6b35; --border:rgba(255,107,53,.2); --glow-sm:0 0 10px #ff6b3566; --glow:0 0 20px #ff6b3588,0 0 60px #ff6b3533; --dark:#1a0802; }
+    body.mode-belajar{ --accent:#a78bfa; --cyan:#a78bfa; --border:rgba(167,139,250,.2); --glow-sm:0 0 10px #a78bfa66; --glow:0 0 20px #a78bfa88,0 0 60px #a78bfa33; --dark:#0d0818; }
+    body.mode-santai { --accent:#00ff9d; --cyan:#00ff9d; --border:rgba(0,255,157,.2); --glow-sm:0 0 10px #00ff9d66; --glow:0 0 20px #00ff9d88,0 0 60px #00ff9d33; --dark:#001a0d; }
+    body.mode-normal { --accent:#00f5ff; --cyan:#00f5ff; --border:rgba(0,245,255,.15); --glow-sm:0 0 10px #00f5ff66; --glow:0 0 20px #00f5ff88,0 0 60px #00f5ff33; --dark:#020c1a; }
 
     html, body {
       width: 100%; height: 100%;
@@ -30,20 +37,29 @@
       color: var(--cyan);
       font-family: 'Share Tech Mono', monospace;
       overflow: hidden;
+      transition: background .6s ease, color .6s ease;
     }
 
-    /* ── Scanlines ── */
+    /* ── Mode flash overlay ── */
+    #modeFlash {
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none;
+      opacity: 0;
+    }
+    #modeFlash.flash { animation: modeFlashAnim .6s ease forwards; }
+    @keyframes modeFlashAnim {
+      0%   { opacity: 0 }
+      20%  { opacity: .35 }
+      100% { opacity: 0 }
+    }
+
     body::after {
       content: '';
       position: fixed; inset: 0;
-      background: repeating-linear-gradient(
-        0deg, transparent, transparent 2px,
-        rgba(0,245,255,.025) 2px, rgba(0,245,255,.025) 4px
-      );
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,245,255,.025) 2px, rgba(0,245,255,.025) 4px);
       pointer-events: none; z-index: 200;
     }
 
-    /* ── Background ── */
     .bg {
       position: fixed; inset: 0;
       background:
@@ -53,18 +69,12 @@
     }
     .grid-bg {
       position: fixed; inset: 0;
-      background-image:
-        linear-gradient(rgba(0,245,255,.04) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(0,245,255,.04) 1px, transparent 1px);
+      background-image: linear-gradient(rgba(0,245,255,.04) 1px, transparent 1px), linear-gradient(90deg, rgba(0,245,255,.04) 1px, transparent 1px);
       background-size: 60px 60px;
     }
-    /* Corner decorations */
+
     .corner { position: fixed; width: 80px; height: 80px; }
-    .corner::before, .corner::after {
-      content: ''; position: absolute;
-      background: var(--cyan);
-      box-shadow: var(--glow-sm);
-    }
+    .corner::before, .corner::after { content: ''; position: absolute; background: var(--cyan); box-shadow: var(--glow-sm); }
     .corner::before { width: 2px; height: 40px; }
     .corner::after  { width: 40px; height: 2px; }
     .corner-tl { top: 20px; left: 20px; }
@@ -72,7 +82,6 @@
     .corner-bl { bottom: 20px; left: 20px; transform: scaleY(-1); }
     .corner-br { bottom: 20px; right: 20px; transform: scale(-1); }
 
-    /* ── Layout ── */
     .layout {
       position: relative; z-index: 10;
       width: 100%; height: 100%;
@@ -80,10 +89,9 @@
       grid-template-columns: 280px 1fr 280px;
       grid-template-rows: 70px 1fr 160px;
       gap: 0;
-      padding: 0;
     }
 
-    /* ── Header ── */
+    /* ── HEADER ── */
     header {
       grid-column: 1 / -1;
       display: flex; align-items: center; justify-content: space-between;
@@ -92,30 +100,16 @@
       background: rgba(2,12,26,.8);
       backdrop-filter: blur(10px);
     }
-    .header-logo {
-      font-family: 'Orbitron', sans-serif;
-      font-size: 20px; font-weight: 900;
-      letter-spacing: 8px;
-      text-shadow: var(--glow);
-    }
-    .header-status {
-      display: flex; gap: 24px; align-items: center;
-    }
-    .status-dot {
-      width: 8px; height: 8px; border-radius: 50%;
-      background: var(--green);
-      box-shadow: 0 0 10px var(--green);
-      animation: blink 2s ease-in-out infinite;
-    }
-    .status-dot.red { background: var(--red); box-shadow: 0 0 10px var(--red); }
+    .header-logo { font-family: 'Orbitron', sans-serif; font-size: 20px; font-weight: 900; letter-spacing: 8px; text-shadow: var(--glow); color: var(--cyan); transition: color .4s; }
+    .header-status { display: flex; gap: 24px; align-items: center; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); box-shadow: 0 0 10px var(--green); animation: blink 2s ease-in-out infinite; }
+    .status-dot.red    { background: var(--red); box-shadow: 0 0 10px var(--red); }
     .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); animation: blink .5s ease-in-out infinite; }
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
-    .status-text { font-size: 11px; letter-spacing: 3px; }
-    .header-time {
-      font-size: 13px; letter-spacing: 2px; color: rgba(0,245,255,.6);
-    }
+    .status-text { font-size: 11px; letter-spacing: 3px; color: var(--cyan); }
+    .header-time { font-size: 13px; letter-spacing: 2px; color: rgba(0,245,255,.6); }
 
-    /* ── Left panel ── */
+    /* ── LEFT PANEL ── */
     .panel-left {
       grid-column: 1; grid-row: 2;
       border-right: 1px solid var(--border);
@@ -123,164 +117,78 @@
       display: flex; flex-direction: column; gap: 16px;
       overflow: hidden;
     }
-    .panel-title {
-      font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
-      color: rgba(0,245,255,.4);
-      border-bottom: 1px solid var(--border);
-      padding-bottom: 8px;
-    }
+    .panel-title { font-size: 10px; letter-spacing: 4px; text-transform: uppercase; color: rgba(0,245,255,.4); border-bottom: 1px solid var(--border); padding-bottom: 8px; }
 
-    /* Mode buttons */
     .mode-list { display: flex; flex-direction: column; gap: 8px; }
     .mode-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: rgba(0,245,255,.6);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px; letter-spacing: 3px;
-      padding: 10px 14px;
-      cursor: pointer;
-      text-align: left;
-      transition: all .2s;
+      background: transparent; border: 1px solid var(--border);
+      color: rgba(0,245,255,.6); font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 3px; padding: 10px 14px;
+      cursor: pointer; text-align: left; transition: all .2s;
       position: relative; overflow: hidden;
     }
-    .mode-btn::before {
-      content: ''; position: absolute;
-      left: 0; top: 0; width: 0; height: 100%;
-      background: rgba(0,245,255,.08);
-      transition: width .2s;
-    }
+    .mode-btn::before { content: ''; position: absolute; left: 0; top: 0; width: 0; height: 100%; background: rgba(0,245,255,.08); transition: width .2s; }
     .mode-btn:hover::before { width: 100%; }
-    .mode-btn:hover, .mode-btn.active {
-      border-color: var(--cyan);
-      color: var(--cyan);
-      box-shadow: var(--glow-sm);
-    }
-    .mode-btn.active { border-color: var(--green); color: var(--green); }
-    .mode-icon { margin-right: 8px; }
+    .mode-btn:hover { border-color: var(--cyan); color: var(--cyan); box-shadow: var(--glow-sm); }
+    .mode-btn.active { border-color: var(--green); color: var(--green); box-shadow: 0 0 10px rgba(0,255,157,.3); }
 
-    /* Quick links */
     .quick-links { display: flex; flex-direction: column; gap: 6px; }
-    .quick-link {
-      font-size: 11px; letter-spacing: 2px;
-      color: rgba(0,245,255,.5);
-      cursor: pointer; padding: 6px 0;
-      border-bottom: 1px solid rgba(0,245,255,.06);
-      transition: color .2s;
-    }
+    .quick-link { font-size: 11px; letter-spacing: 2px; color: rgba(0,245,255,.5); cursor: pointer; padding: 6px 0; border-bottom: 1px solid rgba(0,245,255,.06); transition: color .2s; }
     .quick-link:hover { color: var(--cyan); }
     .quick-link span { margin-right: 8px; }
 
-    /* Waveform */
+    /* Popup button */
+    .popup-btn {
+      background: rgba(0,245,255,.06); border: 1px solid var(--border);
+      color: var(--cyan); font-family: 'Share Tech Mono', monospace;
+      font-size: 10px; letter-spacing: 3px; padding: 10px 14px;
+      cursor: pointer; width: 100%; text-align: center;
+      transition: all .2s; margin-top: 4px;
+    }
+    .popup-btn:hover { border-color: var(--cyan); box-shadow: var(--glow-sm); }
+
     .waveform-wrap { margin-top: auto; }
-    .waveform {
-      display: flex; align-items: flex-end;
-      gap: 3px; height: 40px;
-    }
-    .wv-bar {
-      flex: 1;
-      background: rgba(0,245,255,.3);
-      border-radius: 2px 2px 0 0;
-      transition: height .1s;
-      min-height: 3px;
-    }
+    .waveform { display: flex; align-items: flex-end; gap: 3px; height: 40px; }
+    .wv-bar { flex: 1; background: rgba(0,245,255,.3); border-radius: 2px 2px 0 0; transition: height .1s; min-height: 3px; }
     .waveform.active .wv-bar:nth-child(odd)  { animation: wvOdd  .6s ease-in-out infinite alternate; }
     .waveform.active .wv-bar:nth-child(even) { animation: wvEven .8s ease-in-out infinite alternate; }
     @keyframes wvOdd  { from{height:3px} to{height:38px} }
     @keyframes wvEven { from{height:10px} to{height:28px} }
 
-    /* ── Center ── */
-    .panel-center {
-      grid-column: 2; grid-row: 2;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      position: relative;
-      gap: 0;
-    }
+    /* ── CENTER ── */
+    .panel-center { grid-column: 2; grid-row: 2; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
 
-    /* Orb */
-    .orb-container {
-      position: relative;
-      width: 240px; height: 240px;
-      flex-shrink: 0;
-    }
-    .orb-ring {
-      position: absolute; inset: 0;
-      border-radius: 50%;
-      border: 1.5px solid transparent;
-    }
-    .orb-r1 {
-      border-top-color: var(--cyan); border-right-color: var(--cyan);
-      animation: spin 3s linear infinite;
-    }
-    .orb-r2 {
-      inset: 16px;
-      border-bottom-color: var(--blue); border-left-color: var(--blue);
-      animation: spin 4.5s linear infinite reverse;
-    }
-    .orb-r3 {
-      inset: 30px;
-      border-top-color: rgba(0,245,255,.3); border-right-color: rgba(0,245,255,.3);
-      animation: spin 2s linear infinite;
-    }
-    .orb-r4 {
-      inset: 44px;
-      border-bottom-color: rgba(10,132,255,.5); border-right-color: rgba(10,132,255,.5);
-      animation: spin 6s linear infinite reverse;
-    }
+    .orb-container { position: relative; width: 240px; height: 240px; flex-shrink: 0; }
+    .orb-ring { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid transparent; }
+    .orb-r1 { border-top-color: var(--cyan); border-right-color: var(--cyan); animation: spin 3s linear infinite; }
+    .orb-r2 { inset: 16px; border-bottom-color: var(--blue); border-left-color: var(--blue); animation: spin 4.5s linear infinite reverse; }
+    .orb-r3 { inset: 30px; border-top-color: rgba(0,245,255,.3); animation: spin 2s linear infinite; }
+    .orb-r4 { inset: 44px; border-bottom-color: rgba(10,132,255,.5); animation: spin 6s linear infinite reverse; }
     @keyframes spin { to { transform: rotate(360deg) } }
 
     .orb-core {
-      position: absolute; inset: 58px;
-      border-radius: 50%;
+      position: absolute; inset: 58px; border-radius: 50%;
       background: radial-gradient(circle, rgba(10,132,255,.5) 0%, rgba(0,245,255,.2) 50%, transparent 80%);
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer;
-      transition: all .3s;
+      cursor: pointer; transition: all .3s;
     }
     .orb-core:hover { filter: brightness(1.3); }
-    .orb-core.listening {
-      background: radial-gradient(circle, rgba(0,255,157,.4) 0%, rgba(0,245,255,.2) 50%, transparent 80%);
-      animation: orbPulse .8s ease-in-out infinite;
-    }
-    .orb-core.speaking {
-      background: radial-gradient(circle, rgba(255,215,0,.4) 0%, rgba(0,245,255,.2) 50%, transparent 80%);
-      animation: orbPulse .4s ease-in-out infinite;
-    }
-    @keyframes orbPulse {
-      0%,100% { transform: scale(1); box-shadow: var(--glow) }
-      50%      { transform: scale(1.08); box-shadow: var(--glow-lg) }
+    .orb-core.listening { background: radial-gradient(circle, rgba(0,255,157,.4) 0%, rgba(0,245,255,.2) 50%, transparent 80%); animation: orbPulse .8s ease-in-out infinite; }
+    .orb-core.speaking  { background: radial-gradient(circle, rgba(255,215,0,.4) 0%, rgba(0,245,255,.2) 50%, transparent 80%); animation: orbPulse .4s ease-in-out infinite; }
+    @keyframes orbPulse { 0%,100%{transform:scale(1);box-shadow:var(--glow)} 50%{transform:scale(1.08);box-shadow:var(--glow-lg)} }
+
+    .orb-icon { font-size: 36px; filter: drop-shadow(0 0 10px var(--cyan)); user-select: none; }
+    .state-label { font-size: 11px; letter-spacing: 5px; text-transform: uppercase; color: rgba(0,245,255,.6); margin-top: 14px; height: 16px; text-align: center; }
+    .transcript-bubble { margin-top: 10px; min-height: 36px; max-width: 480px; text-align: center; font-size: 13px; color: rgba(0,245,255,.8); letter-spacing: 1px; line-height: 1.6; padding: 0 16px; }
+
+    /* Mode badge */
+    #modeBadge {
+      margin-top: 12px; font-size: 10px; letter-spacing: 4px; text-transform: uppercase;
+      padding: 4px 14px; border: 1px solid var(--border); color: var(--cyan);
+      transition: all .4s;
     }
 
-    .orb-icon {
-      font-size: 36px;
-      filter: drop-shadow(0 0 10px var(--cyan));
-      user-select: none;
-    }
-
-    /* State label */
-    .state-label {
-      font-size: 11px; letter-spacing: 5px; text-transform: uppercase;
-      color: rgba(0,245,255,.6);
-      margin-top: 14px;
-      height: 16px;
-      text-align: center;
-    }
-
-    /* Transcript bubble */
-    .transcript-bubble {
-      margin-top: 10px;
-      min-height: 36px;
-      max-width: 480px;
-      text-align: center;
-      font-size: 13px;
-      color: rgba(0,245,255,.8);
-      letter-spacing: 1px;
-      line-height: 1.6;
-      padding: 0 16px;
-    }
-
-    /* ── Right panel ── */
+    /* ── RIGHT PANEL ── */
     .panel-right {
       grid-column: 3; grid-row: 2;
       border-left: 1px solid var(--border);
@@ -289,125 +197,57 @@
       overflow: hidden;
     }
 
-    /* System stats */
     .stat-list { display: flex; flex-direction: column; gap: 12px; }
     .stat-item { }
-    .stat-label {
-      font-size: 9px; letter-spacing: 3px; text-transform: uppercase;
-      color: rgba(0,245,255,.4); margin-bottom: 4px;
-    }
-    .stat-bar-bg {
-      height: 3px; background: rgba(0,245,255,.1); border-radius: 2px; overflow: hidden;
-    }
-    .stat-bar {
-      height: 100%; border-radius: 2px;
-      background: linear-gradient(90deg, var(--blue), var(--cyan));
-      box-shadow: 0 0 6px var(--cyan);
-      transition: width .8s ease;
-    }
-    .stat-value {
-      font-size: 10px; color: rgba(0,245,255,.5);
-      margin-top: 3px; text-align: right;
-    }
+    .stat-label { font-size: 9px; letter-spacing: 3px; text-transform: uppercase; color: rgba(0,245,255,.4); margin-bottom: 4px; }
+    .stat-bar-bg { height: 3px; background: rgba(0,245,255,.1); border-radius: 2px; overflow: hidden; }
+    .stat-bar { height: 100%; border-radius: 2px; background: linear-gradient(90deg, var(--blue), var(--cyan)); box-shadow: 0 0 6px var(--cyan); transition: width .8s ease; }
+    .stat-value { font-size: 10px; color: rgba(0,245,255,.5); margin-top: 3px; text-align: right; }
 
-    /* Commands log */
-    .cmd-log {
-      flex: 1; overflow-y: auto;
-      display: flex; flex-direction: column; gap: 6px;
-    }
+    .cmd-log { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 6px; }
     .cmd-log::-webkit-scrollbar { width: 2px; }
     .cmd-log::-webkit-scrollbar-thumb { background: rgba(0,245,255,.3); }
-    .cmd-entry {
-      font-size: 10px; letter-spacing: 1px;
-      padding: 6px 8px;
-      border-left: 2px solid rgba(0,245,255,.2);
-      color: rgba(0,245,255,.5);
-      line-height: 1.5;
-      animation: entrySlide .3s ease;
-    }
-    .cmd-entry.user { border-left-color: var(--blue); color: rgba(0,245,255,.8); }
+    .cmd-entry { font-size: 10px; letter-spacing: 1px; padding: 6px 8px; border-left: 2px solid rgba(0,245,255,.2); color: rgba(0,245,255,.5); line-height: 1.5; animation: entrySlide .3s ease; }
+    .cmd-entry.user   { border-left-color: var(--blue); color: rgba(0,245,255,.8); }
     .cmd-entry.jarvis { border-left-color: var(--green); color: rgba(0,255,157,.8); }
-    @keyframes entrySlide { from { opacity:0; transform: translateX(10px) } to { opacity:1; transform: none } }
+    @keyframes entrySlide { from{opacity:0;transform:translateX(10px)} to{opacity:1;transform:none} }
 
-    /* ── Bottom controls ── */
+    /* ── BOTTOM ── */
     .panel-bottom {
       grid-column: 1 / -1; grid-row: 3;
       border-top: 1px solid var(--border);
       display: flex; align-items: center; justify-content: center;
-      gap: 20px;
-      padding: 0 36px;
-      background: rgba(2,12,26,.8);
-      backdrop-filter: blur(10px);
+      gap: 20px; padding: 0 36px;
+      background: rgba(2,12,26,.8); backdrop-filter: blur(10px);
     }
-
-    /* Main response display */
-    .response-display {
-      flex: 1;
-      font-size: 13px; letter-spacing: 1px; line-height: 1.6;
-      color: rgba(0,245,255,.9);
-      max-height: 100px;
-      overflow-y: auto;
-      padding: 8px 0;
-    }
+    .response-display { flex: 1; font-size: 13px; letter-spacing: 1px; line-height: 1.6; color: rgba(0,245,255,.9); max-height: 100px; overflow-y: auto; padding: 8px 0; }
     .response-display::-webkit-scrollbar { display: none; }
 
-    /* Control buttons */
     .ctrl-btn {
-      background: transparent;
-      border: 1px solid var(--border);
-      color: var(--cyan);
-      font-family: 'Share Tech Mono', monospace;
-      font-size: 11px; letter-spacing: 3px;
-      padding: 12px 22px;
-      cursor: pointer;
-      transition: all .2s;
-      white-space: nowrap;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--cyan); font-family: 'Share Tech Mono', monospace;
+      font-size: 11px; letter-spacing: 3px; padding: 12px 22px;
+      cursor: pointer; transition: all .2s; white-space: nowrap;
       position: relative; overflow: hidden;
     }
-    .ctrl-btn::before {
-      content: ''; position: absolute; inset: 0;
-      background: rgba(0,245,255,.06);
-      transform: scaleX(0); transform-origin: left;
-      transition: transform .2s;
-    }
+    .ctrl-btn::before { content: ''; position: absolute; inset: 0; background: rgba(0,245,255,.06); transform: scaleX(0); transform-origin: left; transition: transform .2s; }
     .ctrl-btn:hover::before { transform: scaleX(1); }
-    .ctrl-btn:hover {
-      border-color: var(--cyan);
-      box-shadow: var(--glow-sm);
-    }
-    .ctrl-btn.primary {
-      border-color: var(--blue);
-      background: rgba(10,132,255,.1);
-    }
-    .ctrl-btn.danger {
-      border-color: rgba(255,58,58,.4);
-      color: var(--red);
-    }
+    .ctrl-btn:hover { border-color: var(--cyan); box-shadow: var(--glow-sm); }
+    .ctrl-btn.primary { border-color: var(--blue); background: rgba(10,132,255,.1); }
+    .ctrl-btn.danger  { border-color: rgba(255,58,58,.4); color: var(--red); }
     .ctrl-btn.danger:hover { border-color: var(--red); box-shadow: 0 0 10px #ff3a3a66; }
 
-    /* Mic indicator */
-    .mic-indicator {
-      width: 48px; height: 48px; border-radius: 50%;
-      border: 1.5px solid var(--border);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 20px;
-      transition: all .3s;
-    }
-    .mic-indicator.active {
-      border-color: var(--green);
-      box-shadow: 0 0 20px rgba(0,255,157,.4);
-      animation: orbPulse 1s ease-in-out infinite;
-    }
+    .mic-indicator { width: 48px; height: 48px; border-radius: 50%; border: 1.5px solid var(--border); display: flex; align-items: center; justify-content: center; font-size: 20px; transition: all .3s; }
+    .mic-indicator.active { border-color: var(--green); box-shadow: 0 0 20px rgba(0,255,157,.4); animation: orbPulse 1s ease-in-out infinite; }
 
-    /* ── Page entrance ── */
     .layout { animation: pageIn .6s cubic-bezier(.4,0,.2,1) both; }
-    @keyframes pageIn {
-      from { opacity: 0; transform: scale(1.02) }
-      to   { opacity: 1; transform: none }
-    }
+    @keyframes pageIn { from{opacity:0;transform:scale(1.02)} to{opacity:1;transform:none} }
   </style>
 </head>
-<body>
+<body class="mode-normal">
+  <!-- Mode flash overlay -->
+  <div id="modeFlash"></div>
+
   <div class="bg"></div>
   <div class="grid-bg"></div>
   <div class="corner corner-tl"></div>
@@ -417,7 +257,7 @@
 
   <div class="layout">
 
-    <!-- ── HEADER ── -->
+    <!-- HEADER -->
     <header>
       <div class="header-logo">J.A.R.V.I.S</div>
       <div class="header-status">
@@ -427,22 +267,14 @@
       <div class="header-time" id="headerTime">--:--:--</div>
     </header>
 
-    <!-- ── LEFT PANEL ── -->
+    <!-- LEFT PANEL -->
     <aside class="panel-left">
       <div class="panel-title">// MODE</div>
       <div class="mode-list">
-        <button class="mode-btn active" data-mode="normal" onclick="setMode('normal')">
-          <span class="mode-icon">⚡</span>NORMAL
-        </button>
-        <button class="mode-btn" data-mode="fokus" onclick="setMode('fokus')">
-          <span class="mode-icon">🎯</span>FOKUS
-        </button>
-        <button class="mode-btn" data-mode="belajar" onclick="setMode('belajar')">
-          <span class="mode-icon">📚</span>BELAJAR
-        </button>
-        <button class="mode-btn" data-mode="santai" onclick="setMode('santai')">
-          <span class="mode-icon">🌙</span>SANTAI
-        </button>
+        <button class="mode-btn active" data-mode="normal"  onclick="setMode('normal')"><span class="mode-icon">⚡</span>NORMAL</button>
+        <button class="mode-btn"        data-mode="fokus"   onclick="setMode('fokus')"><span class="mode-icon">🎯</span>FOKUS</button>
+        <button class="mode-btn"        data-mode="belajar" onclick="setMode('belajar')"><span class="mode-icon">📚</span>BELAJAR</button>
+        <button class="mode-btn"        data-mode="santai"  onclick="setMode('santai')"><span class="mode-icon">🌙</span>SANTAI</button>
       </div>
 
       <div class="panel-title" style="margin-top:8px;">// QUICK OPEN</div>
@@ -454,6 +286,8 @@
         <div class="quick-link" onclick="openSite('chatgpt','ChatGPT')"><span>🤖</span>CHATGPT</div>
       </div>
 
+      <button class="popup-btn" onclick="openPopup()">🪟 BUKA MODE POPUP</button>
+
       <div class="panel-title" style="margin-top:auto;">// AUDIO</div>
       <div class="waveform" id="waveform">
         <div class="wv-bar"></div><div class="wv-bar"></div><div class="wv-bar"></div>
@@ -463,7 +297,7 @@
       </div>
     </aside>
 
-    <!-- ── CENTER ── -->
+    <!-- CENTER -->
     <main class="panel-center">
       <div class="orb-container">
         <div class="orb-ring orb-r1"></div>
@@ -476,9 +310,10 @@
       </div>
       <div class="state-label" id="stateLabel">UCAPKAN "JARVIS" UNTUK MEMULAI</div>
       <div class="transcript-bubble" id="transcriptBubble"></div>
+      <div id="modeBadge">MODE: NORMAL</div>
     </main>
 
-    <!-- ── RIGHT PANEL ── -->
+    <!-- RIGHT PANEL -->
     <aside class="panel-right">
       <div class="panel-title">// SISTEM</div>
       <div class="stat-list">
@@ -503,34 +338,32 @@
       <div class="cmd-log" id="cmdLog"></div>
     </aside>
 
-    <!-- ── BOTTOM CONTROLS ── -->
+    <!-- BOTTOM CONTROLS -->
     <div class="panel-bottom">
       <div class="mic-indicator" id="micIndicator">🎤</div>
       <div class="response-display" id="responseDisplay">
-        Sistem siap. Ucapkan <strong style="color:var(--cyan)">"Jarvis"</strong> untuk mengaktifkan, lalu berikan perintah Anda.
+        Microphone aktif otomatis. Ucapkan <strong style="color:var(--cyan)">"Jarvis"</strong> untuk mengaktifkan lalu berikan perintah Anda.
       </div>
       <button class="ctrl-btn primary" onclick="startListening()">▶ START</button>
       <button class="ctrl-btn danger"  onclick="stopListening()">■ STOP</button>
-      <button class="ctrl-btn" onclick="testVoice()">🔊 TEST SUARA</button>
+      <button class="ctrl-btn" onclick="testVoice()">🔊 TEST</button>
     </div>
 
-  </div><!-- /layout -->
+  </div>
 
   <script>
-  /* ════════════════════════════════════════
-     JARVIS — Main Logic
-  ════════════════════════════════════════ */
+  /* ══════════════════════════════════════════
+     J.A.R.V.I.S  — Main Logic (Final Rev)
+  ══════════════════════════════════════════ */
 
-  // ── State ──
   const STATE = {
-    mode:       'normal',
-    awake:      false,       // true setelah wake word "jarvis"
-    listening:  false,
-    speaking:   false,
-    startTime:  Date.now(),
+    mode:      'normal',
+    awake:     false,
+    listening: false,
+    speaking:  false,
+    startTime: Date.now(),
   };
 
-  // ── Elements ──
   const orbCore      = document.getElementById('orbCore');
   const orbIcon      = document.getElementById('orbIcon');
   const stateLabel   = document.getElementById('stateLabel');
@@ -541,45 +374,40 @@
   const micInd       = document.getElementById('micIndicator');
   const waveform     = document.getElementById('waveform');
   const cmdLog       = document.getElementById('cmdLog');
+  const modeBadge    = document.getElementById('modeBadge');
+  const modeFlash    = document.getElementById('modeFlash');
 
-  // ── Clock & uptime ──
+  /* ── Clock & uptime ── */
   setInterval(() => {
     const now = new Date();
-    document.getElementById('headerTime').textContent =
-      now.toTimeString().slice(0,8);
+    document.getElementById('headerTime').textContent = now.toTimeString().slice(0,8);
     const secs = Math.floor((Date.now() - STATE.startTime) / 1000);
     const mm = String(Math.floor(secs/60)).padStart(2,'0');
     const ss = String(secs % 60).padStart(2,'0');
     document.getElementById('valUptime').textContent = `${mm}:${ss}`;
   }, 1000);
 
-  // ── Mic signal sim ──
+  /* ── Mic signal sim ── */
   setInterval(() => {
     if (STATE.listening) {
-      const v = Math.floor(Math.random()*60 + 40);
-      document.getElementById('barMic').style.width = v + '%';
-      document.getElementById('valMic').textContent = v + '%';
+      const v = Math.floor(Math.random()*60+40);
+      document.getElementById('barMic').style.width = v+'%';
+      document.getElementById('valMic').textContent = v+'%';
     } else {
       document.getElementById('barMic').style.width = '0%';
       document.getElementById('valMic').textContent = '—';
     }
   }, 300);
 
-  // ── Voice synthesis ──
+  /* ── Voice synthesis ── */
   function speak(text, onDone) {
     if (!window.speechSynthesis) { if(onDone) onDone(); return; }
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(text);
-    u.lang   = 'id-ID';
-    u.rate   = 1.0;
-    u.pitch  = 0.9;
-    u.volume = 1;
-
-    // prefer an Indonesian voice if available
+    u.lang = 'id-ID'; u.rate = 1.0; u.pitch = 0.9; u.volume = 1;
     const voices = window.speechSynthesis.getVoices();
     const id = voices.find(v => v.lang.startsWith('id'));
     if (id) u.voice = id;
-
     STATE.speaking = true;
     setOrbState('speaking');
     u.onend = u.onerror = () => {
@@ -590,13 +418,12 @@
     window.speechSynthesis.speak(u);
   }
 
-  // ── Orb visual state ──
+  /* ── Orb state ── */
   function setOrbState(st) {
     orbCore.className = 'orb-core';
     waveform.classList.remove('active');
     micInd.classList.remove('active');
     statusDot.className = 'status-dot';
-
     switch(st) {
       case 'idle':
         orbIcon.textContent = '🤖';
@@ -625,7 +452,6 @@
         orbIcon.textContent = '💬';
         stateLabel.textContent = 'JARVIS BERBICARA…';
         statusText.textContent = 'SPEAKING';
-        statusDot.className = 'status-dot';
         break;
       case 'processing':
         orbIcon.textContent = '⚙️';
@@ -641,7 +467,7 @@
     }
   }
 
-  // ── Log helper ──
+  /* ── Log helper ── */
   function addLog(text, who = 'user') {
     const d = document.createElement('div');
     d.className = `cmd-entry ${who}`;
@@ -650,29 +476,111 @@
     cmdLog.scrollTop = cmdLog.scrollHeight;
     if (cmdLog.children.length > 40) cmdLog.removeChild(cmdLog.firstChild);
   }
+  function setResponse(html) { responseEl.innerHTML = html; }
+  function setTranscript(txt) { transcriptEl.textContent = txt; }
 
-  function setResponse(html) {
-    responseEl.innerHTML = html;
-  }
-
-  function setTranscript(txt) {
-    transcriptEl.textContent = txt;
-  }
-
-  // ════════════════════════════════════════
-  // COMMAND SET — Versi 1 (dari dokumen)
-  // ════════════════════════════════════════
-
-  // ── Sites map ──
+  /* ══════════════════════════════
+     SITES MAP
+  ══════════════════════════════ */
   const SITES = {
-    google:   'https://www.google.com',
-    youtube:  'https://www.youtube.com',
-    whatsapp: 'https://web.whatsapp.com',
-    spotify:  'https://open.spotify.com',
-    chatgpt:  'https://chat.openai.com',
+    google:    'https://www.google.com',
+    youtube:   'https://www.youtube.com',
+    whatsapp:  'https://web.whatsapp.com',
+    spotify:   'https://open.spotify.com',
+    chatgpt:   'https://chat.openai.com',
   };
 
-  // ── Helper: respond + log + speak ──
+  /* ── REVISION 1: buka situs langsung di tab baru (reliable) ── */
+  function openSite(key, label) {
+    const url = SITES[key];
+    if (!url) return;
+    // Buka di tab baru — paling reliable di semua browser
+    const w = window.open(url, '_blank');
+    if (!w) {
+      // Jika popup blocker, fallback ke anchor klik
+      const a = document.createElement('a');
+      a.href = url; a.target = '_blank'; a.rel = 'noopener';
+      document.body.appendChild(a); a.click(); a.remove();
+    }
+    respond(`buka ${label}`, `Baik tuan, membuka ${label}.`);
+  }
+
+  /* ══════════════════════════════
+     REVISION 4: MODE + EFEK VISUAL
+  ══════════════════════════════ */
+  const MODE_CONFIG = {
+    normal: {
+      emoji: '⚡', label: 'NORMAL',
+      color: '#00f5ff',
+      reply: 'Baik tuan, kembali ke mode normal.',
+      effect: null,
+    },
+    fokus: {
+      emoji: '🎯', label: 'FOKUS',
+      color: '#ff6b35',
+      reply: 'Mode fokus aktif. Saya akan meminimalkan distraksi dan membantu Anda berkonsentrasi.',
+      effect: null,
+    },
+    belajar: {
+      emoji: '📚', label: 'BELAJAR',
+      color: '#a78bfa',
+      reply: 'Mode belajar diaktifkan. Mari kita mulai sesi pembelajaran tuan.',
+      effect: () => {
+        setTimeout(() => {
+          const w = window.open(SITES.google, '_blank');
+          if (!w) { const a=document.createElement('a'); a.href=SITES.google; a.target='_blank'; document.body.appendChild(a); a.click(); a.remove(); }
+        }, 1200);
+      },
+    },
+    santai: {
+      emoji: '🌙', label: 'SANTAI',
+      color: '#00ff9d',
+      reply: 'Mode santai diaktifkan. Saatnya beristirahat sejenak tuan.',
+      effect: () => {
+        setTimeout(() => {
+          const yt = window.open(SITES.youtube, '_blank');
+          if (!yt) { const a=document.createElement('a'); a.href=SITES.youtube; a.target='_blank'; document.body.appendChild(a); a.click(); a.remove(); }
+        }, 1200);
+        setTimeout(() => {
+          const sp = window.open(SITES.spotify, '_blank');
+          if (!sp) { const a=document.createElement('a'); a.href=SITES.spotify; a.target='_blank'; document.body.appendChild(a); a.click(); a.remove(); }
+        }, 2200);
+      },
+    },
+  };
+
+  function setMode(mode) {
+    const cfg = MODE_CONFIG[mode];
+    if (!cfg) return;
+
+    STATE.mode = mode;
+
+    // Update button states
+    document.querySelectorAll('.mode-btn').forEach(b => {
+      b.classList.toggle('active', b.dataset.mode === mode);
+    });
+
+    // Update body class for theme
+    document.body.className = `mode-${mode}`;
+
+    // Flash effect
+    modeFlash.style.background = cfg.color;
+    modeFlash.classList.remove('flash');
+    void modeFlash.offsetWidth; // reflow
+    modeFlash.classList.add('flash');
+
+    // Badge
+    modeBadge.textContent = `MODE: ${cfg.label}`;
+    modeBadge.style.color = cfg.color;
+    modeBadge.style.borderColor = cfg.color + '44';
+
+    addLog(`mode ${mode}`, 'user');
+    addLog(cfg.reply, 'jarvis');
+    setResponse(cfg.reply);
+    speak(cfg.reply, () => { if (cfg.effect) cfg.effect(); });
+  }
+
+  /* ── Respond helper ── */
   function respond(logText, reply, onDone) {
     addLog(logText, 'user');
     addLog(reply, 'jarvis');
@@ -680,176 +588,122 @@
     speak(reply, onDone);
   }
 
-  // ── Buka situs ──
-  function openSite(key, label) {
-    const url = SITES[key];
-    if (!url) return;
-    window.open(url, '_blank');
-    respond(`buka ${label}`, `Baik tuan, membuka ${label}.`);
+  /* ══════════════════════════════
+     REVISION 2: KONTROL MUSIK SPOTIFY
+     Mengarahkan ke URL Spotify dengan deep link
+     + simulasi keyboard (Space = play/pause)
+  ══════════════════════════════ */
+  function spotifyControl(action) {
+    // Coba kirim keyboard event ke Spotify tab (jika sudah terbuka)
+    // Karena cross-origin restriction, kita redirect ke Spotify dengan notif
+    switch(action) {
+      case 'play':
+        respond('putar musik', 'Baik tuan, membuka Spotify. Tekan Play untuk memutar.', () => {
+          const sp = window.open(SITES.spotify, 'spotify_tab');
+          if (!sp) { const a=document.createElement('a'); a.href=SITES.spotify; a.target='spotify_tab'; document.body.appendChild(a); a.click(); a.remove(); }
+        });
+        break;
+      case 'pause':
+        respond('pause musik', 'Baik tuan, silakan tekan spasi di tab Spotify untuk pause.');
+        break;
+      case 'next':
+        respond('skip lagu', 'Baik tuan, silakan tekan tombol next di Spotify. Kontrol penuh memerlukan Spotify Premium API.');
+        break;
+      case 'prev':
+        respond('lagu sebelumnya', 'Baik tuan, silakan tekan tombol previous di Spotify.');
+        break;
+    }
   }
 
-  // ── Mode ──
-  // Mode juga menjalankan efek sesuai dokumen:
-  // belajar → buka Google | santai → buka YouTube + Spotify | fokus → tanpa buka site
-  function setMode(mode) {
-    STATE.mode = mode;
-    document.querySelectorAll('.mode-btn').forEach(b => {
-      b.classList.toggle('active', b.dataset.mode === mode);
-    });
-
-    const modeConfig = {
-      normal: {
-        reply1: 'Baik tuan, kembali ke mode normal.',
-        reply2: null,
-        effect: null,
-      },
-      fokus: {
-        reply1: 'Mode fokus aktif, saya akan meminimalkan distraksi.',
-        reply2: null,
-        effect: null,
-      },
-      belajar: {
-        reply1: 'Baik tuan, mode belajar diaktifkan.',
-        reply2: 'Saya akan membantu fokus pada pembelajaran.',
-        effect: () => window.open(SITES.google, '_blank'),
-      },
-      santai: {
-        reply1: 'Baik tuan, mode santai diaktifkan.',
-        reply2: 'Saatnya beristirahat sejenak.',
-        effect: () => {
-          window.open(SITES.youtube, '_blank');
-          setTimeout(() => window.open(SITES.spotify, '_blank'), 800);
-        },
-      },
-    };
-
-    const cfg = modeConfig[mode];
-    if (!cfg) return;
-
-    const fullReply = cfg.reply2
-      ? `${cfg.reply1} ${cfg.reply2}`
-      : cfg.reply1;
-
-    addLog(`mode ${mode}`, 'user');
-    addLog(fullReply, 'jarvis');
-    setResponse(fullReply);
-    speak(fullReply, () => { if (cfg.effect) cfg.effect(); });
+  /* ══════════════════════════════
+     REVISION 3: POPUP MODE
+  ══════════════════════════════ */
+  function openPopup() {
+    const url = window.location.origin + '/popup';
+    const w = window.open(url, 'jarvis_popup', 'width=420,height=280,top=50,right=50,resizable=yes,scrollbars=no');
+    if (!w) {
+      setResponse('⚠️ Popup diblokir browser. Izinkan popup untuk website ini di pengaturan browser Anda.');
+      addLog('[popup diblokir]', 'jarvis');
+    } else {
+      addLog('[popup dibuka]', 'jarvis');
+    }
   }
 
-  // ── Command parser ──
+  /* ══════════════════════════════
+     COMMAND PARSER
+  ══════════════════════════════ */
   function parseCommand(rawCmd) {
     const c = rawCmd.toLowerCase().trim();
 
-    // ── 1. BUKA APLIKASI / WEBSITE ──
-    // Chrome → buka Google saja (browser sudah terbuka)
-    if (/^(buka|open)\s*(chrome|google chrome)$/.test(c)) {
-      return () => respond('buka chrome', 'Baik tuan, membuka Google Chrome.', () => window.open(SITES.google,'_blank'));
-    }
-    if (/^(buka|open)\s*google$/.test(c) || /^(buka|open)\s*(google|cari)/.test(c)) {
-      return () => openSite('google', 'Google');
-    }
-    if (/(buka|open)\s*youtube/.test(c)) {
-      return () => openSite('youtube', 'YouTube');
-    }
-    if (/(buka|open)\s*(chat\s*gpt|chatgpt)/.test(c)) {
-      return () => openSite('chatgpt', 'ChatGPT');
-    }
-    if (/(buka|open)\s*whatsapp/.test(c)) {
-      return () => openSite('whatsapp', 'WhatsApp');
-    }
-    if (/(buka|open)\s*spotify/.test(c)) {
-      return () => openSite('spotify', 'Spotify');
-    }
-    // Microsoft Word → buka file manager / ms365 online
-    if (/(buka|open)\s*(microsoft\s*)?word/.test(c)) {
-      return () => respond('buka word', 'Baik tuan, membuka Microsoft Word.', () => window.open('https://www.office.com/launch/word','_blank'));
-    }
+    // ── Buka situs ──
+    if (/(buka|open)\s*(chrome|google chrome)$/.test(c))     return () => openSite('google','Google Chrome');
+    if (/(buka|open)\s*google/.test(c))                       return () => openSite('google','Google');
+    if (/(buka|open)\s*youtube/.test(c))                      return () => openSite('youtube','YouTube');
+    if (/(buka|open)\s*(chat\s*gpt|chatgpt)/.test(c))        return () => openSite('chatgpt','ChatGPT');
+    if (/(buka|open)\s*whatsapp/.test(c))                     return () => openSite('whatsapp','WhatsApp');
+    if (/(buka|open)\s*spotify/.test(c))                      return () => openSite('spotify','Spotify');
+    if (/(buka|open)\s*(microsoft\s*)?word/.test(c))          return () => respond('buka word','Baik tuan, membuka Microsoft Word.', () => {
+      const w = window.open('https://www.office.com/launch/word','_blank'); if(!w){const a=document.createElement('a');a.href='https://www.office.com/launch/word';a.target='_blank';document.body.appendChild(a);a.click();a.remove();}
+    });
 
-    // ── 2. KONTROL MUSIK ──
-    if (/^(putar\s*musik|play\s*music)$/.test(c) || /^putar\s*lagu/.test(c)) {
-      return () => {
-        respond('putar musik', 'Baik tuan, memutar musik.');
-        window.open(SITES.spotify, '_blank');
-      };
-    }
-    if (/^(skip\s*musik|next\s*lagu|next\s*musik|skip\s*lagu)$/.test(c)) {
-      return () => respond('skip musik', 'Baik tuan, saya lanjutkan ke lagu berikutnya.');
-      // Catatan: skip lagu sungguhan memerlukan integrasi Spotify API
-    }
-
-    // ── 3. SEARCH GOOGLE ──
+    // ── Cari Google ──
     const searchMatch = c.match(/^cari(?:kan)?\s+(.+)/);
-    if (searchMatch) {
-      return () => {
-        const q = searchMatch[1];
-        window.open(`https://www.google.com/search?q=${encodeURIComponent(q)}`, '_blank');
-        respond(`cari: ${q}`, `Baik tuan, mencari "${q}" di Google.`);
-      };
-    }
+    if (searchMatch) return () => {
+      const q = searchMatch[1];
+      const url = `https://www.google.com/search?q=${encodeURIComponent(q)}`;
+      const w = window.open(url,'_blank'); if(!w){const a=document.createElement('a');a.href=url;a.target='_blank';document.body.appendChild(a);a.click();a.remove();}
+      respond(`cari: ${q}`, `Baik tuan, mencari "${q}" di Google.`);
+    };
 
-    // ── 4. MODE SYSTEM ──
+    // ── Kontrol Musik Spotify ──
+    if (/^(putar\s*musik|play\s*music|putar\s*lagu|play\s*musik)$/.test(c)) return () => spotifyControl('play');
+    if (/^(pause\s*musik|stop\s*musik|pause\s*lagu|hentikan\s*musik)$/.test(c)) return () => spotifyControl('pause');
+    if (/^(skip|next|lagu\s*berikutnya|next\s*lagu|skip\s*musik|skip\s*lagu)/.test(c)) return () => spotifyControl('next');
+    if (/^(prev|previous|lagu\s*sebelumnya|previous\s*lagu)/.test(c)) return () => spotifyControl('prev');
+
+    // ── Mode ──
     if (/(mode\s*belajar|aktifkan\s*mode\s*belajar)/.test(c))  return () => setMode('belajar');
     if (/(mode\s*santai|aktifkan\s*mode\s*santai)/.test(c))    return () => setMode('santai');
     if (/(mode\s*fokus|aktifkan\s*mode\s*fokus)/.test(c))      return () => setMode('fokus');
     if (/(mode\s*normal|matikan\s*mode|kembali\s*normal)/.test(c)) return () => setMode('normal');
 
-    // ── 5. PERCAKAPAN UMUM ──
-    if (/^(halo|hai|hello|hey)/.test(c)) {
-      return () => respond(rawCmd, 'Halo tuan! Ada yang bisa saya bantu?');
-    }
-    if (/terima kasih|makasih|thanks/.test(c)) {
-      return () => respond(rawCmd, 'Sama-sama tuan. Senang bisa membantu.');
-    }
-    if (/siapa\s*(kamu|anda|kau|dirimu)/.test(c)) {
-      return () => respond(rawCmd, 'Saya J.A.R.V.I.S — Just A Rather Very Intelligent System. Asisten pribadi tuan.');
-    }
+    // ── Popup ──
+    if (/(buka\s*popup|mode\s*popup|popup)/.test(c)) return () => { openPopup(); respond('buka popup','Baik tuan, membuka Jarvis dalam mode popup.'); };
 
-    // ── 6. WAKTU & TANGGAL ──
-    if (/jam|waktu|pukul/.test(c)) {
-      return () => {
-        const t = new Date().toLocaleTimeString('id-ID');
-        respond(rawCmd, `Sekarang pukul ${t}, tuan.`);
-      };
-    }
-    if (/tanggal|hari ini|hari apa/.test(c)) {
-      return () => {
-        const d = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
-        respond(rawCmd, `Hari ini ${d}, tuan.`);
-      };
-    }
+    // ── Percakapan ──
+    if (/^(halo|hai|hello|hey)/.test(c))        return () => respond(rawCmd,'Halo tuan! Ada yang bisa saya bantu?');
+    if (/terima kasih|makasih|thanks/.test(c))   return () => respond(rawCmd,'Sama-sama tuan. Senang bisa membantu.');
+    if (/siapa\s*(kamu|anda|kau|dirimu)/.test(c)) return () => respond(rawCmd,'Saya J.A.R.V.I.S — Just A Rather Very Intelligent System. Asisten pribadi tuan.');
 
-    // ── 7. SISTEM ──
-    if (/tidur|nonaktif|matikan\s*jarvis/.test(c)) {
-      return () => {
-        addLog(rawCmd,'user');
-        const r = 'Baik tuan, saya masuk ke mode standby. Ucapkan Jarvis jika membutuhkan saya.';
-        addLog(r,'jarvis'); setResponse(r);
-        speak(r, () => { STATE.awake = false; setOrbState('idle'); });
-      };
-    }
-    if (/muat ulang|reload/.test(c)) {
-      return () => respond(rawCmd, 'Baik tuan, memuat ulang halaman.', () => window.location.reload());
-    }
+    // ── Waktu & Tanggal ──
+    if (/jam|waktu|pukul/.test(c)) return () => { const t = new Date().toLocaleTimeString('id-ID'); respond(rawCmd,`Sekarang pukul ${t}, tuan.`); };
+    if (/tanggal|hari ini|hari apa/.test(c)) return () => { const d = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'}); respond(rawCmd,`Hari ini ${d}, tuan.`); };
 
-    // ── 8. FALLBACK ──
+    // ── Sistem ──
+    if (/tidur|nonaktif|matikan\s*jarvis/.test(c)) return () => {
+      addLog(rawCmd,'user');
+      const r = 'Baik tuan, masuk mode standby. Ucapkan Jarvis jika membutuhkan saya.';
+      addLog(r,'jarvis'); setResponse(r);
+      speak(r, () => { STATE.awake = false; setOrbState('idle'); });
+    };
+    if (/muat ulang|reload/.test(c)) return () => respond(rawCmd,'Baik tuan, memuat ulang halaman.', () => window.location.reload());
+
     return null;
   }
 
-  // ── Process spoken text ──
+  /* ── Process spoken text ── */
   function processText(text) {
     const raw = text.trim();
     if (!raw) return;
-
     setTranscript(raw);
     const lower = raw.toLowerCase();
 
-    // Wake word detection
+    // REVISION 5: wake word auto-detect (mic sudah jalan otomatis)
     if (!STATE.awake) {
       if (lower.includes('jarvis')) {
         STATE.awake = true;
-        // Sapaan dari dokumen: "Iya tuan, ada yang bisa dibantu?"
         const greet = greetByTime();
-        addLog('[wake word: jarvis]', 'user');
+        addLog('[wake: jarvis]', 'user');
         addLog(greet, 'jarvis');
         setResponse(`<strong style="color:var(--cyan)">JARVIS ONLINE.</strong> ${greet}`);
         speak(greet);
@@ -858,37 +712,31 @@
       return;
     }
 
-    // Sudah aktif — parse command
-    // Hapus wake word kalau diucapkan lagi di depan perintah
     const cmd = raw.replace(/^jarvis[,\s]*/i, '').trim();
     if (!cmd) return;
 
     setOrbState('processing');
-
     const action = parseCommand(cmd);
     if (action) {
       setTimeout(action, 200);
     } else {
-      // Fallback sesuai dokumen: "Maaf tuan, perintah tidak dikenali"
       const fallback = fallbackReply(cmd);
-      addLog(cmd, 'user');
-      addLog(fallback, 'jarvis');
-      setResponse(fallback);
-      speak(fallback);
+      addLog(cmd,'user'); addLog(fallback,'jarvis');
+      setResponse(fallback); speak(fallback);
     }
 
-    // Auto-sleep setelah 10 detik tidak ada perintah baru
-    setTimeout(() => {
-      if (!STATE.speaking) {
+    // Auto-sleep 15 detik
+    clearTimeout(STATE._sleepTimer);
+    STATE._sleepTimer = setTimeout(() => {
+      if (!STATE.speaking && STATE.awake) {
         STATE.awake = false;
         setOrbState('idle');
       }
-    }, 10000);
+    }, 15000);
   }
 
   function greetByTime() {
     const h = new Date().getHours();
-    // Format: "Iya tuan, ada yang bisa dibantu?" + sapaan waktu
     if (h < 11)  return 'Iya tuan, selamat pagi. Ada yang bisa dibantu?';
     if (h < 15)  return 'Iya tuan, selamat siang. Ada yang bisa dibantu?';
     if (h < 18)  return 'Iya tuan, selamat sore. Ada yang bisa dibantu?';
@@ -896,7 +744,6 @@
   }
 
   function fallbackReply(cmd) {
-    // Pola tetap sesuai dokumen: "Maaf tuan, perintah tidak dikenali"
     const opts = [
       `Maaf tuan, perintah tidak dikenali.`,
       `Maaf tuan, saya kurang memahami "${cmd}". Bisakah diulangi?`,
@@ -905,20 +752,19 @@
     return opts[Math.floor(Math.random()*opts.length)];
   }
 
-  // ════════════════════════════════════════
-  // Speech Recognition
-  // ════════════════════════════════════════
+  /* ══════════════════════════════
+     SPEECH RECOGNITION
+     REVISION 5: auto-start tanpa klik
+  ══════════════════════════════ */
   let recognition = null;
   let manualStop  = false;
 
   function initRecognition() {
     const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SR) {
-      setResponse('⚠️ Browser Anda tidak mendukung Speech Recognition. Gunakan Chrome.');
-      setOrbState('offline');
-      return;
+      setResponse('⚠️ Browser tidak mendukung Speech Recognition. Gunakan Google Chrome.');
+      setOrbState('offline'); return;
     }
-
     recognition = new SR();
     recognition.lang = 'id-ID';
     recognition.continuous = true;
@@ -927,90 +773,69 @@
 
     recognition.onstart = () => {
       STATE.listening = true;
-      setOrbState(STATE.awake ? 'awake' : 'idle');
-      stateLabel.textContent = STATE.awake ? 'SIAP MENERIMA PERINTAH' : 'MENDENGARKAN WAKE WORD…';
       micInd.classList.add('active');
       waveform.classList.add('active');
+      stateLabel.textContent = STATE.awake ? 'SIAP MENERIMA PERINTAH' : 'MENDENGARKAN WAKE WORD…';
     };
-
     recognition.onresult = (e) => {
-      let interim = '';
-      let final   = '';
+      let interim = '', final = '';
       for (let i = e.resultIndex; i < e.results.length; i++) {
         const t = e.results[i][0].transcript;
-        if (e.results[i].isFinal) final += t;
-        else interim += t;
+        if (e.results[i].isFinal) final += t; else interim += t;
       }
       if (interim) setTranscript(interim);
       if (final)   processText(final);
     };
-
     recognition.onerror = (e) => {
       if (e.error === 'not-allowed') {
-        setResponse('⚠️ Izin microphone ditolak. Harap izinkan akses di browser.');
+        setResponse('⚠️ Izin microphone ditolak. Harap izinkan akses mic di browser.');
         setOrbState('offline');
       }
     };
-
     recognition.onend = () => {
       STATE.listening = false;
       waveform.classList.remove('active');
       micInd.classList.remove('active');
       if (!manualStop) {
-        // auto-restart
-        setTimeout(() => {
-          try { recognition.start(); } catch(e){}
-        }, 300);
+        setTimeout(() => { try { recognition.start(); } catch(e){} }, 300);
       }
     };
   }
 
-  // ── Public controls ──
   function startListening() {
     if (!recognition) initRecognition();
     if (!recognition) return;
     manualStop = false;
-    try { recognition.start(); }
-    catch(e) { /* already running */ }
+    try { recognition.start(); } catch(e){}
     setResponse('Microphone aktif. Ucapkan <strong style="color:var(--cyan)">"Jarvis"</strong> untuk memulai.');
   }
 
   function stopListening() {
     manualStop = true;
     if (recognition) recognition.stop();
-    STATE.listening = false;
-    STATE.awake     = false;
-    setOrbState('idle');
-    setTranscript('');
+    STATE.listening = false; STATE.awake = false;
+    setOrbState('idle'); setTranscript('');
     micInd.classList.remove('active');
     waveform.classList.remove('active');
     setResponse('Voice recognition dihentikan. Klik START untuk melanjutkan.');
-    addLog('[dihentikan]', 'jarvis');
+    addLog('[dihentikan]','jarvis');
   }
 
   function toggleListen() {
-    if (STATE.listening) stopListening();
-    else startListening();
+    if (STATE.listening) stopListening(); else startListening();
   }
 
   function testVoice() {
     const r = 'Sistem suara berfungsi dengan baik, tuan. J.A.R.V.I.S siap melayani Anda kapan saja.';
-    speak(r);
-    addLog('[test suara]', 'jarvis');
-    setResponse(r);
+    speak(r); addLog('[test suara]','jarvis'); setResponse(r);
   }
 
-  // ── Auto-start on load (request mic permission) ──
+  /* ── Auto-start on load (REVISION 5) ── */
   window.addEventListener('load', () => {
-    // Load voices
     window.speechSynthesis.getVoices();
     window.speechSynthesis.onvoiceschanged = () => window.speechSynthesis.getVoices();
-
-    // Start recognition → triggers mic permission dialog
-    setTimeout(() => {
-      initRecognition();
-      startListening();
-    }, 800);
+    // Langsung start mic — tidak perlu klik tombol
+    setTimeout(() => { initRecognition(); startListening(); }, 600);
   });
   </script>
 </body>
