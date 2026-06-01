@@ -1,34 +1,34 @@
-const express = require('express');
-const path = require('path');
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message } = req.body;
 
-const app = express();
-const PORT = process.env.PORT || 3000;
+    const response = await fetch(
+      "https://api-inference.huggingface.co/models/EleutherAI/gpt-neo-1.3B",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${process.env.HF_TOKEN}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          inputs: message
+        })
+      }
+    );
 
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'public')));
+    const data = await response.json();
 
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
+    const reply =
+      data?.[0]?.generated_text ||
+      data?.generated_text ||
+      "Tidak ada respon dari AI";
 
-app.get('/main', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'main.html'));
-});
+    res.json({ reply });
 
-app.get('/popup', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'popup.html'));
-});
-
-app.post('/api/chat', (req, res) => {
-  const { message } = req.body;
-  res.json({
-    reply: `Perintah diterima: "${message}". Silakan hubungkan endpoint ini ke AI API pilihan Anda.`
-  });
-});
-
-app.listen(PORT, () => {
-  console.log(`\n╔════════════════════════════════════╗`);
-  console.log(`║   J.A.R.V.I.S  SERVER  ONLINE     ║`);
-  console.log(`║   http://localhost:${PORT}            ║`);
-  console.log(`╚════════════════════════════════════╝\n`);
+  } catch (error) {
+    res.json({
+      success: false,
+      error: error.message
+    });
+  }
 });
