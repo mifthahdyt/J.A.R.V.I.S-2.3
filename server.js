@@ -1,5 +1,4 @@
 import express from "express";
-import fetch from "node-fetch";
 
 const app = express();
 
@@ -20,7 +19,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     // =======================
-    // REQUEST KE HUGGING FACE
+    // REQUEST HUGGING FACE
     // =======================
     const response = await fetch(
       "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
@@ -37,19 +36,19 @@ app.post("/api/chat", async (req, res) => {
     );
 
     // =======================
-    // AMBIL RESPONSE AMAN
+    // HANDLE RESPONSE AMAN
     // =======================
     const text = await response.text();
     let data;
 
     try {
       data = JSON.parse(text);
-    } catch (err) {
+    } catch {
       data = { error: text };
     }
 
     // =======================
-    // AMBIL JAWABAN AI
+    // AMBIL REPLY
     // =======================
     const reply =
       data?.[0]?.generated_text ||
@@ -65,7 +64,7 @@ app.post("/api/chat", async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message || "Server error"
+      error: error.message
     });
   }
 });
@@ -78,6 +77,6 @@ app.get("/", (req, res) => {
 });
 
 // =======================
-// EXPORT FOR VERCEL
+// EXPORT (Vercel wajib)
 // =======================
 export default app;
