@@ -1,0 +1,6 @@
+{
+  "rewrites": [
+    { "source": "/popup", "destination": "/public/popup.html" },
+    { "source": "/main",  "destination": "/public/main.html" }
+  ]
+}
