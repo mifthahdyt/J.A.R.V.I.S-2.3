@@ -19,10 +19,10 @@ app.post("/api/chat", async (req, res) => {
     }
 
     // =======================
-    // REQUEST HUGGING FACE
+    // HUGGING FACE REQUEST (STABIL MODEL)
     // =======================
     const response = await fetch(
-      "https://api-inference.huggingface.co/models/facebook/blenderbot-400M-distill",
+      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-small",
       {
         method: "POST",
         headers: {
@@ -48,7 +48,7 @@ app.post("/api/chat", async (req, res) => {
     }
 
     // =======================
-    // AMBIL REPLY
+    // AMBIL REPLY AI
     // =======================
     const reply =
       data?.[0]?.generated_text ||
@@ -64,7 +64,7 @@ app.post("/api/chat", async (req, res) => {
   } catch (error) {
     return res.status(500).json({
       success: false,
-      error: error.message
+      error: error.message || "Server error"
     });
   }
 });
