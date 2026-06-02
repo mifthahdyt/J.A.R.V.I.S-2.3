@@ -1,82 +1,34 @@
-import express from "express";
+const express = require('express');
+const path = require('path');
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'public')));
 
-// =======================
-// API CHAT
-// =======================
-app.post("/api/chat", async (req, res) => {
-  try {
-    const message = req.body?.message;
-
-    if (!message) {
-      return res.status(400).json({
-        success: false,
-        error: "Message kosong"
-      });
-    }
-
-    // =======================
-    // HUGGING FACE REQUEST (STABIL MODEL)
-    // =======================
-    const response = await fetch(
-      "https://api-inference.huggingface.co/models/microsoft/DialoGPT-small",
-      {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${process.env.HF_TOKEN}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          inputs: message
-        }),
-      }
-    );
-
-    // =======================
-    // HANDLE RESPONSE AMAN
-    // =======================
-    const text = await response.text();
-    let data;
-
-    try {
-      data = JSON.parse(text);
-    } catch {
-      data = { error: text };
-    }
-
-    // =======================
-    // AMBIL REPLY AI
-    // =======================
-    const reply =
-      data?.[0]?.generated_text ||
-      data?.generated_text ||
-      data?.error ||
-      "Tidak ada respon dari AI";
-
-    return res.json({
-      success: true,
-      reply
-    });
-
-  } catch (error) {
-    return res.status(500).json({
-      success: false,
-      error: error.message || "Server error"
-    });
-  }
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// =======================
-// TEST ROUTE
-// =======================
-app.get("/", (req, res) => {
-  res.send("JARVIS API is running 🚀");
+app.get('/main', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'main.html'));
 });
 
-// =======================
-// EXPORT (Vercel wajib)
-// =======================
-export default app;
+app.get('/popup', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'popup.html'));
+});
+
+app.post('/api/chat', (req, res) => {
+  const { message } = req.body;
+  res.json({
+    reply: `Perintah diterima: "${message}". Silakan hubungkan endpoint ini ke AI API pilihan Anda.`
+  });
+});
+
+app.listen(PORT, () => {
+  console.log(`\n╔════════════════════════════════════╗`);
+  console.log(`║   J.A.R.V.I.S  SERVER  ONLINE     ║`);
+  console.log(`║   http://localhost:${PORT}            ║`);
+  console.log(`╚════════════════════════════════════╝\n`);
+});
